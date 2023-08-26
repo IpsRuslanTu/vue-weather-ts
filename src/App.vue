@@ -1,6 +1,6 @@
 <template>
-    <div class="app">
-        <a-spin :spinning="true">
+    <div class='app'>
+        <a-spin :spinning='true'>
             Test
         </a-spin>
     </div>
