@@ -1,7 +1,7 @@
 <template>
     <button class='button' @click='toggle'>
-        <close-outlined v-if='mode === PageMode.Main'/>
-        <setting-outlined v-if='mode === PageMode.Settings'/>
+        <close-outlined v-if='mode === PageMode.Settings'/>
+        <setting-outlined v-if='mode === PageMode.Main'/>
     </button>
 </template>
 

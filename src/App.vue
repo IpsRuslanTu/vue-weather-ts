@@ -3,16 +3,22 @@
         <a-spin :spinning='spinning'>
             <page-switcher :mode='pageMode' :toggle='toggleMode'/>
         </a-spin>
+        <main-page v-if='pageMode === PageMode.Main'/>
+        <settings-page v-if='pageMode === PageMode.Settings'/>
     </div>
 </template>
 
 <script>
-import PageSwitcher from '@/components/PageSwitcher.vue'
 import {defineComponent} from 'vue'
+import PageSwitcher from '@/components/PageSwitcher.vue'
 import {PageMode} from '@/types/PageMode'
+import MainPage from '@/pages/MainPage.vue'
+import SettingsPage from '@/pages/SettingsPage.vue'
 
 export default defineComponent({
     components: {
+        SettingsPage,
+        MainPage,
         PageSwitcher
     },
     data() {
