@@ -12,7 +12,7 @@ import {
     CloseOutlined
 } from '@ant-design/icons-vue'
 import {defineComponent, PropType} from 'vue'
-import {PageMode} from '@/types/PageMode'
+import {PageMode} from '@/models/PageMode'
 
 export default defineComponent({
     components: {
