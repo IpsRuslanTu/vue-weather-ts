@@ -2,18 +2,29 @@
     <div class='app'>
         <a-spin :spinning='spinning'>
             <page-switcher :mode='pageMode' :toggle='toggleMode'/>
+            <main-page v-if='pageMode === PageMode.Main'/>
+            <settings-page v-if='pageMode === PageMode.Settings'/>
         </a-spin>
-        <main-page v-if='pageMode === PageMode.Main'/>
-        <settings-page v-if='pageMode === PageMode.Settings'/>
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import {defineComponent} from 'vue'
 import PageSwitcher from '@/components/PageSwitcher.vue'
-import {PageMode} from '@/types/PageMode'
 import MainPage from '@/pages/MainPage.vue'
 import SettingsPage from '@/pages/SettingsPage.vue'
+import {PageMode} from '@/models/PageMode'
+import {WeatherApi} from '@/http/weatherApi'
+import {Weather} from '@/models/Weather'
+import {Geocode} from '@/models/Geocode'
+
+interface State {
+    spinning: boolean
+    pageMode: PageMode
+    cityList: string[]
+    weatherList: Weather[]
+    PageMode: typeof PageMode
+}
 
 export default defineComponent({
     components: {
@@ -21,11 +32,34 @@ export default defineComponent({
         MainPage,
         PageSwitcher
     },
-    data() {
+    data(): State {
         return {
             spinning: false,
             pageMode: PageMode.Main,
+            cityList: [],
+            weatherList: [],
             PageMode
+        }
+    },
+    async mounted() {
+        const localStorageCityList = localStorage.getItem('city-list')
+        if (localStorageCityList) {
+            this.cityList = JSON.parse(localStorageCityList)
+        }
+
+        if (this.weatherList.length > 0) {
+        //
+        } else {
+            this.spinning = true
+            const {coords} = await this.getCurrentPosition()
+            const geocode: Geocode = {
+                latitude: coords.latitude,
+                longitude: coords.longitude
+            }
+            const weather = await WeatherApi.fetchByCoordinates(geocode)
+            this.weatherList = [weather]
+            this.spinning = false
+
         }
     },
     methods: {
@@ -33,6 +67,12 @@ export default defineComponent({
             this.pageMode = this.pageMode === PageMode.Main
                 ? PageMode.Settings
                 : PageMode.Main
+        },
+        // eslint-disable-next-line no-undef
+        getCurrentPosition(): Promise<GeolocationPosition> {
+            return new Promise((resolve, reject) =>
+                navigator.geolocation.getCurrentPosition(resolve, reject)
+            )
         }
     }
 })
