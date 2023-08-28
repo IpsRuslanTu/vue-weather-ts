@@ -22,6 +22,7 @@ import {PageMode} from '@/models/PageMode'
 import {WeatherApi} from '@/http/weatherApi'
 import {Weather} from '@/models/Weather'
 import {Geocode} from '@/models/Geocode'
+import {notification} from 'ant-design-vue'
 
 interface State {
     spinning: boolean
@@ -65,7 +66,9 @@ export default defineComponent({
                 const weather = await WeatherApi.fetchByCoordinates(geocode)
                 this.weatherList = [weather]
             } catch (e) {
-                //
+                this.openNotification(
+                    'We don\'t know your location. :) You can add the desired city in settings.'
+                )
             } finally {
                 this.spinning = false
             }
@@ -82,6 +85,12 @@ export default defineComponent({
             return new Promise((resolve, reject) =>
                 navigator.geolocation.getCurrentPosition(resolve, reject)
             )
+        },
+        openNotification(message: string) {
+            notification.open({
+                message: 'Weather notification',
+                description: message
+            })
         }
     }
 })
@@ -101,5 +110,9 @@ export default defineComponent({
     margin: 0 auto;
     padding: 10px;
     border: 1px solid grey;
+}
+
+.ant-spin-nested-loading {
+    height: 100%;
 }
 </style>
