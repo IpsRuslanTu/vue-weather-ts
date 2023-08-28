@@ -6,7 +6,7 @@ export class WeatherMapper {
         return {
             city: apiWeather.location.name,
             temperature: apiWeather.current.temp_c,
-            iconUrl: apiWeather.current.iconUrl
+            iconUrl: apiWeather.current.condition.icon
         }
     }
 }

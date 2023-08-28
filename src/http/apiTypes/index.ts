@@ -1,14 +1,12 @@
 export interface WeatherResponse {
-    location: WeatherLocationResponse
-    current: WeatherTempResponse
-}
-
-interface WeatherLocationResponse {
-    name: string
-    country: string
-}
-
-interface WeatherTempResponse {
-    temp_c: number,
-    iconUrl: string
+    location: {
+        name: string
+        country: string
+    }
+    current: {
+        temp_c: number,
+        condition: {
+            icon: string
+        }
+    }
 }

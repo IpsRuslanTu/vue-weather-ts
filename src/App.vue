@@ -1,9 +1,14 @@
 <template>
     <div class='app'>
         <a-spin :spinning='spinning'>
-            <page-switcher :mode='pageMode' :toggle='toggleMode'/>
-            <main-page v-if='pageMode === PageMode.Main'/>
-            <settings-page v-if='pageMode === PageMode.Settings'/>
+            <page-switcher
+                :mode='pageMode'
+                :toggle='toggleMode'/>
+            <main-page
+                v-if='pageMode === PageMode.Main'
+                :weather-list='weatherList'/>
+            <settings-page
+                v-if='pageMode === PageMode.Settings'/>
         </a-spin>
     </div>
 </template>
@@ -48,18 +53,22 @@ export default defineComponent({
         }
 
         if (this.weatherList.length > 0) {
-        //
+            //
         } else {
             this.spinning = true
-            const {coords} = await this.getCurrentPosition()
-            const geocode: Geocode = {
-                latitude: coords.latitude,
-                longitude: coords.longitude
+            try {
+                const {coords} = await this.getCurrentPosition()
+                const geocode: Geocode = {
+                    latitude: coords.latitude,
+                    longitude: coords.longitude
+                }
+                const weather = await WeatherApi.fetchByCoordinates(geocode)
+                this.weatherList = [weather]
+            } catch (e) {
+                //
+            } finally {
+                this.spinning = false
             }
-            const weather = await WeatherApi.fetchByCoordinates(geocode)
-            this.weatherList = [weather]
-            this.spinning = false
-
         }
     },
     methods: {
