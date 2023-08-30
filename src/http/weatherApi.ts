@@ -14,4 +14,16 @@ export class WeatherApi {
 
         return WeatherMapper.mapFromApi(data)
     }
+
+    public static async fetchWeatherList(cityList: string[]) {
+        const requests = cityList.map(city =>
+            $api.get<WeatherResponse>(
+                '/current.json',
+                {params: {q: city}}
+            )
+        )
+        const response = await Promise.all(requests)
+
+        return response.map(r => WeatherMapper.mapFromApi(r.data))
+    }
 }

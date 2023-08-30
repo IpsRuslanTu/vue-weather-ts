@@ -52,26 +52,10 @@ export default defineComponent({
         if (localStorageCityList) {
             this.cityList = JSON.parse(localStorageCityList)
         }
-
         if (this.weatherList.length > 0) {
-            //
+            await this.getWeatherList()
         } else {
-            this.spinning = true
-            try {
-                const {coords} = await this.getCurrentPosition()
-                const geocode: Geocode = {
-                    latitude: coords.latitude,
-                    longitude: coords.longitude
-                }
-                const weather = await WeatherApi.fetchByCoordinates(geocode)
-                this.weatherList = [weather]
-            } catch (e) {
-                this.openNotification(
-                    'We don\'t know your location. :) You can add the desired city in settings.'
-                )
-            } finally {
-                this.spinning = false
-            }
+            await this.getCurrentPositionWeather()
         }
     },
     methods: {
@@ -91,6 +75,40 @@ export default defineComponent({
                 message: 'Weather notification',
                 description: message
             })
+        },
+        async getCurrentPositionWeather() {
+            this.spinning = true
+            try {
+                const {coords} = await this.getCurrentPosition()
+                const geocode: Geocode = {
+                    latitude: coords.latitude,
+                    longitude: coords.longitude
+                }
+                const weather = await WeatherApi.fetchByCoordinates(geocode)
+                this.weatherList = [weather]
+                localStorage.setItem(
+                    'city-list',
+                    JSON.stringify(this.weatherList.map(i => i.city))
+                )
+            } catch (e) {
+                this.openNotification(
+                    'We don\'t know your location. :) You can add the desired city in settings.'
+                )
+            } finally {
+                this.spinning = false
+            }
+        },
+        async getWeatherList() {
+            this.spinning = true
+            try {
+                this.weatherList = await WeatherApi.fetchWeatherList(this.cityList)
+            } catch (e) {
+                this.openNotification(
+                    'Error request'
+                )
+            } finally {
+                this.spinning = false
+            }
         }
     }
 })
