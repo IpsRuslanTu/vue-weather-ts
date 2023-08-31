@@ -19,22 +19,23 @@ export default defineComponent({
         SettingOutlined,
         CloseOutlined
     },
+    props: {
+        mode: {
+            type: String as PropType<PageMode>,
+            required: true
+        }
+    },
     data() {
         return {
             PageMode
         }
     },
-
-  props: {
-      mode: {
-          type: String as PropType<PageMode>,
-          required: true
-      },
-      toggle: {
-          type: Function,
-          required: true
-      }
-  }
+    methods: {
+        toggle() {
+            this.$emit('toggle')
+        }
+    },
+    emits: ['toggle']
 })
 </script>
 

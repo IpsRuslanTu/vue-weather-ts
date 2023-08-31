@@ -3,12 +3,17 @@
         <a-spin :spinning='spinning'>
             <page-switcher
                 :mode='pageMode'
-                :toggle='toggleMode'/>
+                @toggle='toggleMode'
+            />
             <main-page
                 v-if='pageMode === PageMode.Main'
                 :weather-list='weatherList'/>
             <settings-page
-                v-if='pageMode === PageMode.Settings'/>
+                v-if='pageMode === PageMode.Settings'
+                :weather-list='weatherList'
+                @post='postCity'
+                @remove='removeWeather'
+            />
         </a-spin>
     </div>
 </template>
@@ -23,6 +28,7 @@ import {WeatherApi} from '@/http/weatherApi'
 import {Weather} from '@/models/Weather'
 import {Geocode} from '@/models/Geocode'
 import {notification} from 'ant-design-vue'
+import {LOCAL_STORAGE_KEY} from '@/config'
 
 interface State {
     spinning: boolean
@@ -48,11 +54,11 @@ export default defineComponent({
         }
     },
     async mounted() {
-        const localStorageCityList = localStorage.getItem('city-list')
+        const localStorageCityList = localStorage.getItem(LOCAL_STORAGE_KEY)
         if (localStorageCityList) {
             this.cityList = JSON.parse(localStorageCityList)
         }
-        if (this.weatherList.length > 0) {
+        if (this.cityList.length > 0) {
             await this.getWeatherList()
         } else {
             await this.getCurrentPositionWeather()
@@ -86,10 +92,7 @@ export default defineComponent({
                 }
                 const weather = await WeatherApi.fetchByCoordinates(geocode)
                 this.weatherList = [weather]
-                localStorage.setItem(
-                    'city-list',
-                    JSON.stringify(this.weatherList.map(i => i.city))
-                )
+                this.updateLocalStorage([weather.city])
             } catch (e) {
                 this.openNotification(
                     'We don\'t know your location. :) You can add the desired city in settings.'
@@ -109,6 +112,27 @@ export default defineComponent({
             } finally {
                 this.spinning = false
             }
+        },
+        async postCity(newCity: string) {
+            this.cityList.push(newCity)
+
+            try {
+                this.weatherList = await WeatherApi.fetchWeatherList(this.cityList)
+                this.updateLocalStorage(this.cityList)
+            } catch (e) {
+                this.openNotification(
+                    'Error request'
+                )
+            } finally {
+                this.spinning = false
+            }
+        },
+        removeWeather(city: string) {
+            this.weatherList = this.weatherList.filter(i => i.city !== city)
+            this.updateLocalStorage(this.weatherList.map(i => i.city))
+        },
+        updateLocalStorage(cityList: string[]) {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cityList))
         }
     }
 })
@@ -128,6 +152,7 @@ export default defineComponent({
     margin: 0 auto;
     padding: 10px;
     border: 1px solid grey;
+    overflow-y: scroll;
 }
 
 .ant-spin-nested-loading {
