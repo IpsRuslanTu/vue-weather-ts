@@ -114,14 +114,13 @@ export default defineComponent({
             }
         },
         async postCity(newCity: string) {
-            this.weatherList.push({city: newCity})
-
             try {
-                this.weatherList = await WeatherApi.fetchWeatherList(this.weatherList.map(i => i.city))
+                const newWeather = await WeatherApi.fetchWeatherList([newCity])
+                this.weatherList.push(newWeather[0])
                 this.updateLocalStorage()
             } catch (e) {
                 this.openNotification(
-                    'Error request'
+                    'Please, check the correctness of city.'
                 )
             } finally {
                 this.spinning = false
@@ -138,7 +137,10 @@ export default defineComponent({
             this.updateLocalStorage()
         },
         updateLocalStorage() {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.weatherList.map(i => i.city)))
+            localStorage.setItem(
+                LOCAL_STORAGE_KEY,
+                JSON.stringify(this.weatherList.map(i => i.city))
+            )
         }
     }
 })
