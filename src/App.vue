@@ -13,7 +13,7 @@
                 :weather-list='weatherList'
                 @post='postCity'
                 @remove='removeWeather'
-                @reorder='changeCityOrder'
+                @reorder='reorderWeatherList'
             />
         </a-spin>
     </div>
@@ -34,7 +34,6 @@ import {LOCAL_STORAGE_KEY} from '@/config'
 interface State {
     spinning: boolean
     pageMode: PageMode
-    cityList: string[]
     weatherList: Weather[]
     PageMode: typeof PageMode
 }
@@ -49,18 +48,18 @@ export default defineComponent({
         return {
             spinning: false,
             pageMode: PageMode.Main,
-            cityList: [],
             weatherList: [],
             PageMode
         }
     },
     async mounted() {
         const localStorageCityList = localStorage.getItem(LOCAL_STORAGE_KEY)
+        let cityList = []
         if (localStorageCityList) {
-            this.cityList = JSON.parse(localStorageCityList)
+            cityList = JSON.parse(localStorageCityList)
         }
-        if (this.cityList.length > 0) {
-            await this.getWeatherList()
+        if (cityList.length > 0) {
+            await this.getWeatherList(cityList)
         } else {
             await this.getCurrentPositionWeather()
         }
@@ -93,7 +92,7 @@ export default defineComponent({
                 }
                 const weather = await WeatherApi.fetchByCoordinates(geocode)
                 this.weatherList = [weather]
-                this.updateLocalStorage([weather.city])
+                this.updateLocalStorage()
             } catch (e) {
                 this.openNotification(
                     'We don\'t know your location. :) You can add the desired city in settings.'
@@ -102,10 +101,10 @@ export default defineComponent({
                 this.spinning = false
             }
         },
-        async getWeatherList() {
+        async getWeatherList(cityList: string[]) {
             this.spinning = true
             try {
-                this.weatherList = await WeatherApi.fetchWeatherList(this.cityList)
+                this.weatherList = await WeatherApi.fetchWeatherList(cityList)
             } catch (e) {
                 this.openNotification(
                     'Error request'
@@ -115,11 +114,11 @@ export default defineComponent({
             }
         },
         async postCity(newCity: string) {
-            this.cityList.push(newCity)
+            this.weatherList.push({city: newCity})
 
             try {
-                this.weatherList = await WeatherApi.fetchWeatherList(this.cityList)
-                this.updateLocalStorage(this.cityList)
+                this.weatherList = await WeatherApi.fetchWeatherList(this.weatherList.map(i => i.city))
+                this.updateLocalStorage()
             } catch (e) {
                 this.openNotification(
                     'Error request'
@@ -130,20 +129,16 @@ export default defineComponent({
         },
         removeWeather(city: string) {
             this.weatherList = this.weatherList.filter(i => i.city !== city)
-            this.cityList = this.cityList.filter(i => i !== city)
-            this.updateLocalStorage(this.weatherList.map(i => i.city))
+            this.updateLocalStorage()
         },
-        updateLocalStorage(cityList: string[]) {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cityList))
-        },
-        changeCityOrder(oldIndex: number, newIndex: number) {
-            const tempCity = this.cityList[oldIndex]
-            this.cityList[oldIndex] = this.cityList[newIndex]
-            this.cityList[newIndex] = tempCity
-
+        reorderWeatherList(oldIndex: number, newIndex: number) {
             const tempWeather = this.weatherList[oldIndex]
             this.weatherList[oldIndex] = this.weatherList[newIndex]
             this.weatherList[newIndex] = tempWeather
+            this.updateLocalStorage()
+        },
+        updateLocalStorage() {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.weatherList.map(i => i.city)))
         }
     }
 })
