@@ -13,6 +13,7 @@
                 :weather-list='weatherList'
                 @post='postCity'
                 @remove='removeWeather'
+                @reorder='changeCityOrder'
             />
         </a-spin>
     </div>
@@ -129,10 +130,20 @@ export default defineComponent({
         },
         removeWeather(city: string) {
             this.weatherList = this.weatherList.filter(i => i.city !== city)
+            this.cityList = this.cityList.filter(i => i !== city)
             this.updateLocalStorage(this.weatherList.map(i => i.city))
         },
         updateLocalStorage(cityList: string[]) {
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cityList))
+        },
+        changeCityOrder(oldIndex: number, newIndex: number) {
+            const tempCity = this.cityList[oldIndex]
+            this.cityList[oldIndex] = this.cityList[newIndex]
+            this.cityList[newIndex] = tempCity
+
+            const tempWeather = this.weatherList[oldIndex]
+            this.weatherList[oldIndex] = this.weatherList[newIndex]
+            this.weatherList[newIndex] = tempWeather
         }
     }
 })
@@ -152,7 +163,7 @@ export default defineComponent({
     margin: 0 auto;
     padding: 10px;
     border: 1px solid grey;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .ant-spin-nested-loading {
