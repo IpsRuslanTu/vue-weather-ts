@@ -151,12 +151,12 @@ export default defineComponent({
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: Arial, serif;
 }
 
 .app {
     position: relative;
     width: 200px;
-    height: 300px;
     margin: 0 auto;
     padding: 10px;
     border: 1px solid grey;
