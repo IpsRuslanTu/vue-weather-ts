@@ -15,7 +15,21 @@ export default defineComponent({
         weatherList: {
             type: Array as PropType<Weather[]>,
             required: true
+        },
+        startIntervalRequest: {
+            type: Function,
+            required: true
+        },
+        stopIntervalRequest: {
+            type: Function,
+            required: true
         }
+    },
+    mounted() {
+        this.startIntervalRequest()
+    },
+    unmounted() {
+        this.stopIntervalRequest()
     }
 })
 </script>

@@ -7,7 +7,10 @@
             />
             <main-page
                 v-if='pageMode === PageMode.Main'
-                :weather-list='weatherList'/>
+                :weather-list='weatherList'
+                :start-interval-request='startIntervalRequest'
+                :stop-interval-request='stopIntervalRequest'
+            />
             <settings-page
                 v-if='pageMode === PageMode.Settings'
                 :weather-list='weatherList'
@@ -29,13 +32,14 @@ import {WeatherApi} from '@/http/weatherApi'
 import {Weather} from '@/models/Weather'
 import {Geocode} from '@/models/Geocode'
 import {notification} from 'ant-design-vue'
-import {LOCAL_STORAGE_KEY} from '@/config'
+import {LOCAL_STORAGE_KEY, REQUEST_INTERVAL} from '@/config'
 
 interface State {
     spinning: boolean
     pageMode: PageMode
     weatherList: Weather[]
     PageMode: typeof PageMode
+    intervalRequests: number | undefined
 }
 
 export default defineComponent({
@@ -49,15 +53,12 @@ export default defineComponent({
             spinning: false,
             pageMode: PageMode.Main,
             weatherList: [],
+            intervalRequests: undefined,
             PageMode
         }
     },
     async mounted() {
-        const localStorageCityList = localStorage.getItem(LOCAL_STORAGE_KEY)
-        let cityList = []
-        if (localStorageCityList) {
-            cityList = JSON.parse(localStorageCityList)
-        }
+        const cityList = this.getCitiesFromLocalStorage()
         if (cityList.length > 0) {
             await this.getWeatherList(cityList)
         } else {
@@ -69,6 +70,20 @@ export default defineComponent({
             this.pageMode = this.pageMode === PageMode.Main
                 ? PageMode.Settings
                 : PageMode.Main
+        },
+        async startIntervalRequest() {
+            this.intervalRequests = setInterval(async () => {
+                await this.fetchWeatherFromStorageCities()
+            }, REQUEST_INTERVAL)
+        },
+        stopIntervalRequest() {
+            clearInterval(this.intervalRequests)
+        },
+        async fetchWeatherFromStorageCities() {
+            const cityList = this.getCitiesFromLocalStorage()
+            if (cityList.length > 0) {
+                await this.getWeatherList(cityList)
+            }
         },
         // eslint-disable-next-line no-undef
         getCurrentPosition(): Promise<GeolocationPosition> {
@@ -136,6 +151,15 @@ export default defineComponent({
             this.weatherList[newIndex] = tempWeather
             this.updateLocalStorage()
         },
+        getCitiesFromLocalStorage(): string[] {
+            const localStorageCityList = localStorage.getItem(LOCAL_STORAGE_KEY)
+            let cityList = []
+            if (localStorageCityList) {
+                cityList = JSON.parse(localStorageCityList)
+            }
+
+            return cityList
+        },
         updateLocalStorage() {
             localStorage.setItem(
                 LOCAL_STORAGE_KEY,
@@ -148,22 +172,22 @@ export default defineComponent({
 
 <style lang="scss">
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, serif;
 }
 
 .app {
-    position: relative;
-    width: 200px;
-    margin: 0 auto;
-    padding: 10px;
-    border: 1px solid grey;
-    overflow-y: auto;
+  position: relative;
+  width: 200px;
+  margin: 0 auto;
+  padding: 10px;
+  border: 1px solid grey;
+  overflow-y: auto;
 }
 
 .ant-spin-nested-loading {
-    height: 100%;
+  height: 100%;
 }
 </style>
