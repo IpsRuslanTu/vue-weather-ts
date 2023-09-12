@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import WeatherItem from '@/components/WeatherItem.vue'
+import WeatherItem from '@/components/weathers/WeatherItem.vue'
 import {Weather} from '@/models/Weather'
 
 export default defineComponent({

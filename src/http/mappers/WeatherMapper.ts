@@ -11,7 +11,7 @@ export class WeatherMapper {
             humidity: apiWeather.current.humidity,
             visibility: apiWeather.current.vis_km,
             windSpeed: apiWeather.current.wind_mph,
-            windDirection: apiWeather.current.wind_dir,
+            windDegree: apiWeather.current.wind_degree,
             iconUrl: apiWeather.current.condition.icon
         }
     }

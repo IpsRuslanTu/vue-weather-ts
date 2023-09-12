@@ -4,7 +4,7 @@
 </template>
 
 <script lang="ts">
-import WeatherList from '@/components/WeatherList.vue'
+import WeatherList from '@/components/weathers/WeatherList.vue'
 import {Weather} from '@/models/Weather'
 import {defineComponent, PropType} from 'vue'
 

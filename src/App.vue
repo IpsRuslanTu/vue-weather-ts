@@ -24,7 +24,7 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import PageSwitcher from '@/components/PageSwitcher.vue'
+import PageSwitcher from '@/components/pageSwitcher/PageSwitcher.vue'
 import MainPage from '@/pages/MainPage.vue'
 import SettingsPage from '@/pages/SettingsPage.vue'
 import {PageMode} from '@/models/PageMode'

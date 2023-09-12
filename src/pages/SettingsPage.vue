@@ -2,10 +2,11 @@
     <div>
         <div class='title'>Settings</div>
         <draggable
-                v-model='draggableList'
-                item-key='name'
-                handle='.icon'
-                @change='finish'>
+            v-model='draggableList'
+            item-key='name'
+            handle='.icon'
+            @change='finish'
+        >
             <template #item='{ element }'>
                 <div class='item'>
                     <div>
@@ -92,5 +93,4 @@ export default defineComponent({
     margin-right: 7px;
     cursor: pointer;
 }
-
 </style>

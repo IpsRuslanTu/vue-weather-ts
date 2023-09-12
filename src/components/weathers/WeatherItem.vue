@@ -11,7 +11,7 @@
             </div>
             <div class='list'>
                 <div class='wind'>
-                    <ArrowUpOutlined/>
+                    <ArrowUpOutlined class='wind-direction'/>
                     {{ weather.windSpeed }}m/s
                 </div>
                 <div class='pressure'>
@@ -44,6 +44,11 @@ export default defineComponent({
             type: Object as PropType<Weather>,
             required: true
         }
+    },
+    data() {
+        return {
+            degreeRotate: 'rotate(' + this.weather.windDegree + 'deg)'
+        }
     }
 })
 </script>
@@ -64,6 +69,10 @@ export default defineComponent({
     align-items: center;
     font-size: 30px;
     font-weight: bold;
+}
+
+.wind-direction {
+    transform: v-bind('degreeRotate');
 }
 
 .temperatureFeels {

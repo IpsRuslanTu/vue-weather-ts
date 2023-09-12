@@ -10,7 +10,7 @@ export interface WeatherResponse {
         humidity: number,
         vis_km: number,
         wind_mph: number,
-        wind_dir: string,
+        wind_degree: number,
         condition: {
             icon: string
         }

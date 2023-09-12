@@ -6,6 +6,6 @@ export interface Weather {
     humidity: number,
     visibility: number,
     windSpeed: number,
-    windDirection: string,
+    windDegree: number,
     iconUrl: string
 }
