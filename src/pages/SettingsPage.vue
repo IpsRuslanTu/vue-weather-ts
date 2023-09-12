@@ -20,7 +20,7 @@
             </template>
         </draggable>
         <div class='title'>Add location</div>
-        <post-setting-item @post='post'/>
+        <post-input-value placeholder='Input city' @post='post'/>
     </div>
 </template>
 
@@ -28,13 +28,13 @@
 import {createVNode, defineComponent, PropType} from 'vue'
 import draggable from 'vuedraggable'
 import {Weather} from '@/models/Weather'
-import PostSettingItem from '@/components/settings/PostSettingItem.vue'
+import PostInputValue from '@/components/postInputValue/PostInputValue.vue'
 import {DeleteOutlined, ExclamationCircleOutlined, MenuOutlined} from '@ant-design/icons-vue'
 import {Modal} from 'ant-design-vue'
 
 export default defineComponent({
     name: 'SettingsPage',
-    components: {MenuOutlined, DeleteOutlined, PostSettingItem, draggable},
+    components: {PostInputValue, MenuOutlined, DeleteOutlined, draggable},
     props: {
         weatherList: {
             type: Array as PropType<Weather[]>,

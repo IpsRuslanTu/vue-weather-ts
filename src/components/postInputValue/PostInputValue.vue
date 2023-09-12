@@ -4,7 +4,7 @@
             size='small'
             class='input'
             v-model:value='inputValue'
-            placeholder='Input city'
+            :placeholder='placeholder'
         />
         <enter-outlined @click='post'/>
     </form>
@@ -16,6 +16,11 @@ import {defineComponent, ref} from 'vue'
 
 export default defineComponent({
     components: {EnterOutlined},
+    props: {
+        placeholder: {
+            type: String
+        }
+    },
     setup() {
         const inputValue = ref('')
         return {
