@@ -5,4 +5,4 @@ import Antd from 'ant-design-vue'
 const app = createApp(App)
 app.use(Antd)
 
-app.mount('#app')
+app.mount('weather-widget')
